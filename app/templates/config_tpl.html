@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ITC Configuration {{ hostname }}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link href="{{ url_for('static', filename='css/acp.css') }}" rel="stylesheet" type="text/css">
+</head>
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<script>
+function selectChange() {
+    document.getElementById("btn_config_form").submit();
+}
+
+</script>
+<form action="/buttons" method="post" name="btn_config_form" id="btn_config_form">
+
+    <table id="cadre">
+        <tr>
+            <td>
+                <h3>Configuration des boutons pour {{ hostname }}</h3>
+            </td>
+        </tr>
+        {% for button in buttons %}
+        <tr bgcolor="white">
+            <td>
+                <h3>{{ button.name }}</h3>
+                <table>
+                    <tr>
+                        <td>Type action</td>
+                        <td><select name="button_action-{{ button.name }}" onchange="selectChange()">
+                            <option value="toggle" {% if button.action=='toggle' %} selected{% endif %}>Toggle</option>
+                            <option value="switch" {% if button.action=='switch' %} selected{% endif %}>Switch vidéo
+                            </option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td>Source</td>
+                        <td>
+                            {% for input in button.matrix_in %}
+                            <select name="button_input-{{ loop.index0 }}-{{ button.name }}" onchange="selectChange()">
+                                {% for key, value in videohub['INPUT LABELS'].items() %}
+                                <option value="{{ key }}" {% if input== key %} selected{% endif %}>{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                            {% endfor %}
+                            {% if button.action == 'toggle' %}
+                            <input type="submit" name="add_button_{{ button.name }}"
+                                   formaction="/buttons/{{ button.name }}/add_toggle" value="+">
+                            {% if button.matrix_in | count > 2 %}
+                            <input type="submit" name="remove_button_{{ button.name }}"
+                                   formaction="/buttons/{{ button.name }}/del_toggle" value="-">
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Destination</td>
+                        <td>
+                            <select name="button_output-{{ button.name }}" onchange="selectChange()">
+                                {% for key, value in videohub['OUTPUT LABELS'].items() %}
+                                <option value="{{ key }}" {% if button.matrix_out== key %} selected{% endif %}>{{ value
+                                    }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Test</td>
+                        <td>
+                            <input type="submit" name="test_button_{{ button.name }}"
+                                   formaction="/buttons/{{ button.name }}/test" value="APPUI BOUTON">
+                            Echo visuel <input type="checkbox" name="echo_button-{{ button.name }}" {% if
+                                               button.visual_echo== 'on' %}checked{% endif %}>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td>
+                <input type="submit" name="submit_button" value="Submit">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="/">Accueil</a>
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

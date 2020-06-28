@@ -1,0 +1,30 @@
+body {
+    font-family: Arial;
+}
+
+#cadre {
+    background-color: #CCCCCC;
+    margin: auto;
+}
+
+h1   {
+    font-family: inherit;
+    text-align: center;
+}
+
+h3   {
+    font-family: inherit;
+    text-align: center;
+}
+
+h4   {
+    font-family: inherit;
+    text-align: center;
+    font-color: pink;
+}
+
+.green {
+    background-color: lime;}
+
+.red {
+    background-color: red;}

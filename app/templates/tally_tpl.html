@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tally {{ hostname }}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link href="{{ url_for('static', filename='css/acp.css') }}" rel="stylesheet" type="text/css">
+</head>
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<table id="cadre">
+    <tr>
+        <td colspan="{{ tallies | count }}">
+            <h1>Tally {{ hostname }}</h1>
+        </td>
+    </tr>
+    <tr>
+        {% for tally in tallies %}
+        <td {% if tally.current_status=='PGM' %}bgcolor="red" {% elif tally.current_status=='PVW' %}bgcolor="yellow" {%
+            endif %}>
+            <h3>{{ tally.name }}</h3>
+            Tally status is {{ tally.current_status }}
+            <hr/>
+
+            <a href="tally?tally_id={{ tally.id }}&status=pvw">PREVIEW</a><br>
+            <a href="tally?tally_id={{ tally.id }}&status=pgm">PROGRAM</a><br>
+            <a href="tally?tally_id={{ tally.id }}&status=off">OFF</a><br>
+        </td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <td colspan="3" align="center">
+            <a href="tally">STATUS</a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" align="center">
+            <a href="/">Accueil</a>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
