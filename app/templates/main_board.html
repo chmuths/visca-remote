@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contrôle caméras</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet" type="text/css">
+</head>
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<form action="/" method="post" name="cam_buttons_form" id="cam_buttons_form">
+    <table id="cadre">
+        <tr>
+            <td colspan="{{cameras | count}}">
+                <h3>Contrôle des caméras</h3>
+            </td>
+        </tr>
+        <tr bgcolor="white">
+            {% for camera in cameras %}
+            <td>
+                <h3>{{ camera.name }}</h3>
+                <table>
+                    {% for buttons_row in camera.buttons %}
+                    <tr>
+                        {% for button_def in buttons_row %}
+                        <td>
+                            <input type="submit" name="{{camera.address}}-{{button_def.name}}"
+                                   value="{{button_def.name}}">
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td align="right">
+                            Focus
+                        </td>
+                        <td>
+                            <input type="submit" name="{{camera.address}}-focus"
+                                   value="{{camera.focus_mode}}">
+                        </td>
+                    </tr>
+                </table>
+                <a href="/config?camera={{camera.address}}">Configurer les boutons</a>
+            </td>
+            {% endfor %}
+        </tr>
+    </table>
+</form>
+</body>
+</html>

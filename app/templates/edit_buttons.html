@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Configuration caméra</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/config.css') }}" rel="stylesheet" type="text/css">
+</head>
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<script>
+function selectChange() {
+    document.getElementById("cam_buttons_form").submit();
+}
+
+
+
+
+</script>
+<form action="/config" method="post" name="cam_buttons_form" id="cam_buttons_form">
+    <table id="cadre">
+        <tr>
+            <td>
+                <h3>Configuration des boutons</h3>
+                <h3>Caméra : {{ camera.name }}</h3>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table id="boutons">
+                    {% for buttons_row in camera.buttons %}
+                    {% set row_loop = loop %}
+                    <tr bgcolor="white">
+                        {% for button_def in buttons_row %}
+                        <td>
+                            <table cellspacing="5">
+                                <tr>
+                                    <td>
+                                        Nom du bouton
+                                    </td>
+                                    <td>
+                                        <input type="text" name="button_name-{{row_loop.index0}}-{{loop.index0}}"
+                                               value="{{button_def.name}}">
+                                    </td>
+                                </tr>
+                                <!--                    <tr>-->
+                                <!--                        <td>-->
+                                <!--                            Fonction-->
+                                <!--                        </td>-->
+                                <!--                        <td>-->
+                                <!--                            <select name="button_action-{{row_loop.index0}}-{{loop.index0}}" onchange="selectChange()">-->
+                                <!--                                <option value="pt_direct" {% if button_def.action=='pt_direct' %} selected{% endif %}>-->
+                                <!--                                    PAN & TILT-->
+                                <!--                                </option>-->
+                                <!--                                <option value="ptz_direct" {% if button_def.action=='ptz_direct' %} selected{% endif %}>-->
+                                <!--                                    PAN, TILT & ZOOM-->
+                                <!--                                </option>-->
+                                <!--                            </select>-->
+                                <!--                        </td>-->
+                                <!--                    </tr>-->
+                                <tr>
+                                    <td>
+                                        Valeur PAN *
+                                    </td>
+                                    <td>
+                                        <input type="number" size="8" min="0" max="816"
+                                               name="pan_value-{{row_loop.index0}}-{{loop.index0}}"
+                                               value="{{button_def.pan_pos}}">
+                                        vitesse <input type="number" min=0 max=15 size="3"
+                                                       name="pan_speed-{{row_loop.index0}}-{{loop.index0}}"
+                                                       value="{{button_def.pan_speed}}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Valeur TILT *
+                                    </td>
+                                    <td>
+                                        <input type="number" size="8" min="0" max="212"
+                                               name="tilt_value-{{row_loop.index0}}-{{loop.index0}}"
+                                               value="{{button_def.tilt_pos}}">
+                                        vitesse <input type="number" size="3" min=0 max=15
+                                                       name="tilt_speed-{{row_loop.index0}}-{{loop.index0}}"
+                                                       value="{{button_def.tilt_speed}}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Valeur ZOOM
+                                    </td>
+                                    <td>
+                                        <input type="number" size="8" min="0" max="2880"
+                                               name="zoom_value-{{row_loop.index0}}-{{loop.index0}}"
+                                               value="{{button_def.zoom_value}}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Valeur FOCUS
+                                    </td>
+                                    <td>
+                                        <input type="number" size="8" min="0" max="576"
+                                               name="focus_value-{{row_loop.index0}}-{{loop.index0}}"
+                                               value="{{button_def.focus_value}}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+
+                                    </td>
+                                    <td>
+                                        <input type="submit" name="test-{{row_loop.index0}}-{{loop.index0}}"
+                                               value="Test">
+                                    </td>
+                                </tr>
+                            </table>
+                            {% endfor %}
+                        </td>
+                        {% endfor %}
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Pan: {{camera_status.pan}} Tilt: {{camera_status.tilt}} Zoom: {{camera_status.zoom}} Focus:
+                {{camera_status.focus}}
+                <input type="submit" name="autofocus" value="{{camera_status.focus_mode}}"><br/>
+                Adresse IP pour tablette ou téléphone : {{ip_address}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" name="send" value="Valider">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="/">Retour</a>
+            </td>
+        </tr>
+    </table>
+    <input type="hidden" name="camera" value="{{ camera.address }}">
+</form>
+</body>
+</html>

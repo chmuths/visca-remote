@@ -1,7 +1,11 @@
 body {
     font-family: Arial;
+    font-size: 24pt;
 }
 
+a {
+    font-size: 12pt;
+}
 #cadre {
     background-color: #CCCCCC;
     margin: auto;
@@ -28,3 +32,6 @@ h4   {
 
 .red {
     background-color: red;}
+
+input, select {
+    font-size: 18pt;}
