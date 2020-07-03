@@ -1,0 +1,141 @@
+{
+  "cameras": [
+    {
+      "address": 1,
+      "name": "gauche",
+      "buttons": [
+        [
+          {
+            "name": "orateurs",
+            "action": "pt_direct",
+            "pan_pos": 350,
+            "tilt_pos": 100,
+            "pan_speed": 0,
+            "tilt_speed": 0,
+            "zoom_value": 0,
+            "focus_value": 123
+          },
+          {
+            "name": "orateur 2",
+            "action": "pt_direct",
+            "pan_pos": 450,
+            "tilt_pos": 212,
+            "pan_speed": 15,
+            "tilt_speed": 15,
+            "zoom_value": 2880,
+            "focus_value": 576
+          }
+        ],
+        [
+          {
+            "name": "chanteur 1",
+            "action": "pt_direct",
+            "pan_pos": 0,
+            "tilt_pos": 126,
+            "pan_speed": 0,
+            "tilt_speed": 0,
+            "zoom_value": 1500,
+            "focus_value": 418
+          },
+          {
+            "name": "chanteur 2",
+            "action": "pt_direct",
+            "pan_pos": 350,
+            "tilt_pos": 126,
+            "pan_speed": 0,
+            "tilt_speed": 0,
+            "zoom_value": 1000,
+            "focus_value": 493
+          }
+        ]
+      ],
+      "focus_mode": "Manual"
+    },
+    {
+      "address": 2,
+      "name": "ensemble",
+      "buttons": [
+        [
+          {
+            "name": "estrades",
+            "action": "ptz_direct",
+            "tilt_pos": 120,
+            "pan_speed": 0,
+            "tilt_speed": 0,
+            "pan_pos": 220
+          },
+          {
+            "name": "assembl\u00e9e",
+            "action": "pt_direct",
+            "pan_pos": 350,
+            "tilt_pos": 126,
+            "pan_speed": 0,
+            "tilt_speed": 0
+          }
+        ],
+        [
+          {
+            "name": "-",
+            "action": "ptz_direct",
+            "tilt_pos": 120,
+            "pan_speed": 0,
+            "tilt_speed": 0,
+            "pan_pos": 220
+          },
+          {
+            "name": "-",
+            "action": "pt_direct",
+            "pan_pos": 350,
+            "tilt_pos": 126,
+            "pan_speed": 0,
+            "tilt_speed": 0
+          }
+        ]
+      ],
+      "focus_mode": null
+    },
+    {
+      "address": 3,
+      "name": "droite",
+      "buttons": [
+        [
+          {
+            "name": "Long titre",
+            "action": "ptz_direct",
+            "tilt_pos": 120,
+            "pan_speed": 0,
+            "tilt_speed": 0,
+            "pan_pos": 220
+          },
+          {
+            "name": "-",
+            "action": "pt_direct",
+            "pan_pos": 350,
+            "tilt_pos": 126,
+            "pan_speed": 0,
+            "tilt_speed": 0
+          }
+        ],
+        [
+          {
+            "name": "-",
+            "action": "ptz_direct",
+            "tilt_pos": 120,
+            "pan_speed": 0,
+            "tilt_speed": 0,
+            "pan_pos": 220
+          },
+          {
+            "name": "-",
+            "action": "pt_direct",
+            "pan_pos": 350,
+            "tilt_pos": 126,
+            "pan_speed": 0,
+            "tilt_speed": 0
+          }
+        ]
+      ],
+      "focus_mode": null
+    }
+  ]
+}
