@@ -12,9 +12,6 @@ function selectChange() {
     document.getElementById("cam_buttons_form").submit();
 }
 
-
-
-
 </script>
 <form action="/config" method="post" name="cam_buttons_form" id="cam_buttons_form">
     <table id="cadre">
@@ -42,21 +39,6 @@ function selectChange() {
                                                value="{{button_def.name}}">
                                     </td>
                                 </tr>
-                                <!--                    <tr>-->
-                                <!--                        <td>-->
-                                <!--                            Fonction-->
-                                <!--                        </td>-->
-                                <!--                        <td>-->
-                                <!--                            <select name="button_action-{{row_loop.index0}}-{{loop.index0}}" onchange="selectChange()">-->
-                                <!--                                <option value="pt_direct" {% if button_def.action=='pt_direct' %} selected{% endif %}>-->
-                                <!--                                    PAN & TILT-->
-                                <!--                                </option>-->
-                                <!--                                <option value="ptz_direct" {% if button_def.action=='ptz_direct' %} selected{% endif %}>-->
-                                <!--                                    PAN, TILT & ZOOM-->
-                                <!--                                </option>-->
-                                <!--                            </select>-->
-                                <!--                        </td>-->
-                                <!--                    </tr>-->
                                 <tr>
                                     <td>
                                         Valeur PAN *
@@ -112,10 +94,23 @@ function selectChange() {
                                                value="Test">
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>
+
+                                    </td>
+                                    <td align="right" >
+                                        <input type="submit" name="delete-{{row_loop.index0}}-{{loop.index0}}"
+                                               formaction="/button/{{row_loop.index0}}/{{loop.index0}}/delete"
+                                               onclick="if (!confirm('Supprimer le bouton?')) { return false }"
+                                               value="Supprimer" class="delete">
+                                    </td>
+                                </tr>
                             </table>
                             {% endfor %}
                         </td>
-                        {% endfor %}
+                        <td><input type="submit" name="add-{{row_loop.index0}}" value="Ajouter un bouton"></td>
+                    </tr>
+                    {% endfor %}
                 </table>
             </td>
         </tr>

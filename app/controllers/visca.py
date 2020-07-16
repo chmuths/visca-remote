@@ -1,6 +1,7 @@
 import time
 import serial
 
+from config import hw_conf
 
 def int_to_nibble(value):
     value1 = value % 16
@@ -24,7 +25,10 @@ def hex_print(bytes_array):
     print('|'.join(hex(x) for x in bytes_array))
 
 
-ser = serial.Serial('COM4', 9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=1, timeout=0.1)
+debug_mode = hw_conf.get('global', {}).get("debug", False)
+serial_port = hw_conf.get('global', {}).get("serial", "COM4")
+ser = serial.Serial(serial_port, 9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=1, timeout=0.1)
+
 
 class Visca():
 
@@ -34,11 +38,27 @@ class Visca():
         self.buttons = buttons
         self.focus_mode = None
 
+    @staticmethod
+    def set_address_with_ack(address):
+        command_string = b'\x88\x30' + address + b'\xff'
+        if debug_mode:
+            hex_print(command_string)
+        ser.write(command_string)
+        time.sleep(1)
+        response = ser.read(50)
+        if debug_mode:
+            hex_print(response)
+        return response
+
     def send_command_with_ack(self, hex_bytes):
         command_string = (self.address + 0x80).to_bytes(1, byteorder='big') + hex_bytes + b'\xff'
-        # hex_print(command_string)
+        if debug_mode:
+            hex_print(command_string)
         ser.write(command_string)
-        return ser.read(50)
+        response = ser.read(50)
+        if debug_mode:
+            hex_print(response)
+        return response
 
     # PAN-TILT group of methods
     def pt_stop(self):
@@ -203,6 +223,11 @@ class Visca():
 
 # TEST code
 if __name__ == '__main__':
+
+    Visca.set_address_with_ack(1)
+    Visca.set_address_with_ack(1)
+    Visca.set_address_with_ack(1)
+
     camera = Visca(1, 'Test camera')
 
     # hex_print(camera.zoom_query())

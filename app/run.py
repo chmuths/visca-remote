@@ -3,21 +3,20 @@
 import json
 import os.path
 import socket
-from flask import Flask, render_template, send_file, request, jsonify
+from flask import Flask, render_template, send_file, request
 from controllers import visca
-
-# Get config file from same folder than this module
-folder_name = os.path.dirname(__file__)
-path = os.path.join(folder_name, "..", 'config.json')
-with open(path, 'r') as config_file:
-    hw_conf = json.load(config_file)
+from config import hw_conf
 
 host_name = socket.gethostname()
 host_ip = str(socket.gethostbyname(host_name))
 
+debug_mode = hw_conf.get('global', {}).get("debug", False)
+
 cameras = []
 for camera in hw_conf.get('cameras'):
     address = camera.get("address", 0x81)
+    if address != 0x81:
+        visca.Visca.set_address_with_ack(1)
     name = camera.get("name", "No Name")
     buttons_list = camera.get("buttons")
     this_camera = visca.Visca(address, name, buttons_list)
@@ -34,17 +33,17 @@ def save_config(cameras_list):
     for camera in cameras_list:
         camera_dict = camera.__dict__
         camera_dict_list.append(camera_dict)
-    final_dict = {"cameras": camera_dict_list}
+
+    final_dict = {"cameras": camera_dict_list, "global": hw_conf.get("global", {})}
+
     folder_name = os.path.dirname(__file__)
     path = os.path.join(folder_name, "..", 'config.json')
     with open(path, 'w') as config_file:
         json.dump(final_dict, config_file)
 
 
-
 def execute_action(camera, button):
-    if button['action'] == 'pt_direct':
-        camera.pt_direct(button['pan_pos'], button['tilt_pos'], button['pan_speed'], button['tilt_speed'])
+    camera.pt_direct(button['pan_pos'], button['tilt_pos'], button['pan_speed'], button['tilt_speed'])
 
     zoom_value = button.get('zoom_value')
     if zoom_value:
@@ -109,6 +108,8 @@ def main_board():
                         found_button = button_item
             if found_button:
                 execute_action(filtered_cameras[0], found_button)
+            elif debug_mode:
+                print("Button not found")
             if split_key[1] == 'focus':
                 if value == "Auto":
                     filtered_cameras[0].focus_manual()
@@ -174,7 +175,6 @@ def edit_buttons():
                         else:
                             if 'focus_value' in cam.buttons[button_row][button_col].keys():
                                 cam.buttons[button_row][button_col].pop('focus_value')
-            save_config(cameras)
 
             for key, value in request.form.items():
                 if value == 'Test':
@@ -188,13 +188,48 @@ def edit_buttons():
                         cam.focus_auto()
                     else:
                         cam.focus_manual()
+                elif 'add-' in key:
+                    split_key = key.split("-")
+                    if len(split_key) > 1:
+                        button_row = int(split_key[1])
+                        cam.buttons[button_row] += [{
+                            "name": "nouveau bouton",
+                            "pan_pos": 408,
+                            "tilt_pos": 126,
+                            "pan_speed": 0,
+                            "tilt_speed": 0,
+                            "zoom_value": 0,
+                            "focus_value": 288
+                        }]
 
+            save_config(cameras)
             camera_status = get_camera_status(cam)
 
             return render_template('edit_buttons.html', camera=cam, camera_status=camera_status, ip_address=host_ip)
         else:
             return render_template('main_board.html', cameras=cameras)
 
+
+@app.route('/button/<row>/<column>/delete', methods=['POST'])
+def delete_button(row, column):
+    """
+    Display the main buttons page
+    :return: HTML page
+    """
+
+    camera_address = int(request.form.get('camera'))
+    filtered_cameras = [cam for cam in cameras if cam.address == camera_address]
+    if len(filtered_cameras) == 1:
+        cam = filtered_cameras[0]
+
+        del cam.buttons[int(row)][int(column)]
+
+        save_config(cameras)
+        camera_status = get_camera_status(cam)
+
+        return render_template('edit_buttons.html', camera=cam, camera_status=camera_status, ip_address=host_ip)
+    else:
+        return render_template('main_board.html', cameras=cameras)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int("80"))

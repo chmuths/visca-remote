@@ -5,3 +5,7 @@ body {
 
 input, select {
     font-size: 10pt;}
+
+.delete {
+    background-color: red
+}
