@@ -43,11 +43,13 @@ class Visca():
     def set_address_with_ack(address):
         command_string = b'\x88\x30' + address.to_bytes(1, byteorder='big') + b'\xff'
         if debug_mode:
+            print("Command")
             hex_print(command_string)
         ser.write(command_string)
-        time.sleep(1)
+        time.sleep(2)
         response = ser.read(50)
         if debug_mode:
+            print("Response")
             hex_print(response)
         return response
 
@@ -112,8 +114,8 @@ class Visca():
         return self.send_command_with_ack(pt_direct_bytes)
 
     def pt_query(self):
-        pt_reset_bytes = b'\x09\x06\x12'
-        pt_status = self.send_command_with_ack(pt_reset_bytes)
+        pt_query_bytes = b'\x09\x06\x12'
+        pt_status = self.send_command_with_ack(pt_query_bytes)
         if pt_status and pt_status[1] == 0x50:
             pan_pos = nibble_to_int(pt_status[2:6])
             tilt_pos = nibble_to_int(pt_status[6:10])
@@ -163,8 +165,8 @@ class Visca():
         return self.send_command_with_ack(zoom_bytes)
 
     def zoom_query(self):
-        pt_reset_bytes = b'\x09\x04\x47'
-        zoom_status = self.send_command_with_ack(pt_reset_bytes)
+        zoom_query_bytes = b'\x09\x04\x47'
+        zoom_status = self.send_command_with_ack(zoom_query_bytes)
         if zoom_status and zoom_status[1] == 0x50:
             zoom_pos = nibble_to_int(zoom_status[2:6])
             return (zoom_pos)

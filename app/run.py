@@ -12,11 +12,11 @@ host_ip = str(socket.gethostbyname(host_name))
 
 debug_mode = hw_conf.get('global', {}).get("debug", False)
 
+visca.Visca.set_address_with_ack(1)
+
 cameras = []
 for camera in hw_conf.get('cameras'):
     address = camera.get("address", 0x81)
-    if address != 0x81:
-        visca.Visca.set_address_with_ack(1)
     name = camera.get("name", "No Name")
     ceiling = camera.get("ceiling_mount", False)
     buttons_list = camera.get("buttons")
