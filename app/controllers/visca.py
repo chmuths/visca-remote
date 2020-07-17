@@ -32,15 +32,16 @@ ser = serial.Serial(serial_port, 9600, bytesize=serial.EIGHTBITS, parity=serial.
 
 class Visca():
 
-    def __init__(self, address, name, buttons=None):
+    def __init__(self, address, name, buttons=None, ceiling_mount=False):
         self.address = address
         self.name = name
         self.buttons = buttons
         self.focus_mode = None
+        self.ceiling_mount = ceiling_mount
 
     @staticmethod
     def set_address_with_ack(address):
-        command_string = b'\x88\x30' + address + b'\xff'
+        command_string = b'\x88\x30' + address.to_bytes(1, byteorder='big') + b'\xff'
         if debug_mode:
             hex_print(command_string)
         ser.write(command_string)
@@ -70,19 +71,31 @@ class Visca():
         return self.send_command_with_ack(pt_reset_bytes)
 
     def pt_up(self):
-        pt_right_bytes = b'\x01\x06\x01\x00\x00\x03\x01'
-        return self.send_command_with_ack(pt_right_bytes)
+        if not self.ceiling_mount:
+            pt_up_bytes = b'\x01\x06\x01\x00\x00\x03\x01'
+        else:
+            pt_up_bytes = b'\x01\x06\x01\x00\x00\x03\x02'
+        return self.send_command_with_ack(pt_up_bytes)
 
     def pt_down(self):
-        pt_right_bytes = b'\x01\x06\x01\x00\x00\x03\x02'
-        return self.send_command_with_ack(pt_right_bytes)
+        if not self.ceiling_mount:
+            pt_down_bytes = b'\x01\x06\x01\x00\x00\x03\x02'
+        else:
+            pt_down_bytes = b'\x01\x06\x01\x00\x00\x03\x01'
+        return self.send_command_with_ack(pt_down_bytes)
 
     def pt_left(self):
-        pt_right_bytes = b'\x01\x06\x01\x00\x00\x01\x03'
-        return self.send_command_with_ack(pt_right_bytes)
+        if not self.ceiling_mount:
+            pt_left_bytes = b'\x01\x06\x01\x00\x00\x01\x03'
+        else:
+            pt_left_bytes = b'\x01\x06\x01\x00\x00\x02\x03'
+        return self.send_command_with_ack(pt_left_bytes)
 
     def pt_right(self):
-        pt_right_bytes = b'\x01\x06\x01\x00\x00\x02\x03'
+        if not self.ceiling_mount:
+            pt_right_bytes = b'\x01\x06\x01\x00\x00\x02\x03'
+        else:
+            pt_right_bytes = b'\x01\x06\x01\x00\x00\x01\x03'
         return self.send_command_with_ack(pt_right_bytes)
 
     def pt_direct(self, pan_pos, tilt_pos, pan_speed=0, tilt_speed=0):
@@ -92,8 +105,8 @@ class Visca():
         :param tilt_pos: down=0, middle=126, up=212
         :return:
         """
-        pan_string = int_to_nibble(pan_pos)
-        tilt_string = int_to_nibble(tilt_pos)
+        pan_string = int_to_nibble(pan_pos if not self.ceiling_mount else 816 - pan_pos)
+        tilt_string = int_to_nibble(tilt_pos if not self.ceiling_mount else 212 - tilt_pos)
         pt_direct_bytes = b'\x01\x06\x02' + pan_speed.to_bytes(1, byteorder='big') + \
                           tilt_speed.to_bytes(1, byteorder='big') + pan_string + tilt_string
         return self.send_command_with_ack(pt_direct_bytes)

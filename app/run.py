@@ -18,8 +18,9 @@ for camera in hw_conf.get('cameras'):
     if address != 0x81:
         visca.Visca.set_address_with_ack(1)
     name = camera.get("name", "No Name")
+    ceiling = camera.get("ceiling_mount", False)
     buttons_list = camera.get("buttons")
-    this_camera = visca.Visca(address, name, buttons_list)
+    this_camera = visca.Visca(address, name, buttons=buttons_list, ceiling_mount=ceiling)
     cameras.append(this_camera)
 
 
@@ -176,19 +177,23 @@ def edit_buttons():
                             if 'focus_value' in cam.buttons[button_row][button_col].keys():
                                 cam.buttons[button_row][button_col].pop('focus_value')
 
+            special_button = False
             for key, value in request.form.items():
                 if value == 'Test':
+                    special_button = True
                     split_key = key.split("-")
                     if len(split_key) > 2:
                         button_row = int(split_key[1])
                         button_col = int(split_key[2])
                         execute_action(cam, cam.buttons[button_row][button_col])
                 elif key == 'autofocus':
+                    special_button = True
                     if value == 'Manual':
                         cam.focus_auto()
                     else:
                         cam.focus_manual()
                 elif 'add-' in key:
+                    special_button = True
                     split_key = key.split("-")
                     if len(split_key) > 1:
                         button_row = int(split_key[1])
@@ -201,6 +206,12 @@ def edit_buttons():
                             "zoom_value": 0,
                             "focus_value": 288
                         }]
+            if not special_button:
+                pan_value = int(request.form.get('pan_slider'))
+                tilt_value = int(request.form.get('tilt_slider'))
+                zoom_value = int(request.form.get('zoom_slider'))
+                cam.pt_direct(pan_value, tilt_value, pan_speed=15, tilt_speed=15)
+                cam.zoom_direct(zoom_value)
 
             save_config(cameras)
             camera_status = get_camera_status(cam)

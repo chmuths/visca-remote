@@ -12,6 +12,7 @@ function selectChange() {
     document.getElementById("cam_buttons_form").submit();
 }
 
+
 </script>
 <form action="/config" method="post" name="cam_buttons_form" id="cam_buttons_form">
     <table id="cadre">
@@ -98,7 +99,7 @@ function selectChange() {
                                     <td>
 
                                     </td>
-                                    <td align="right" >
+                                    <td align="right">
                                         <input type="submit" name="delete-{{row_loop.index0}}-{{loop.index0}}"
                                                formaction="/button/{{row_loop.index0}}/{{loop.index0}}/delete"
                                                onclick="if (!confirm('Supprimer le bouton?')) { return false }"
@@ -116,9 +117,24 @@ function selectChange() {
         </tr>
         <tr>
             <td>
-                Pan: {{camera_status.pan}} Tilt: {{camera_status.tilt}} Zoom: {{camera_status.zoom}} Focus:
-                {{camera_status.focus}}
-                <input type="submit" name="autofocus" value="{{camera_status.focus_mode}}"><br/>
+                <table>
+                    <tr>
+                        <td height="150"><input type="range" min="0" max="816" value="{{camera_status.pan}}" name="pan_slider" onchange="selectChange()"></td>
+                        <td><input type="range" class="vranger" min="0" max="212" value="{{camera_status.tilt}}" name="tilt_slider"
+                                   onchange="selectChange()"></td>
+                        <td><input type="range" class="vranger" min="0" max="2880" value="{{camera_status.zoom}}" name="zoom_slider"
+                                   onchange="selectChange()"></td>
+                        <td><input type="submit" name="autofocus" value="{{camera_status.focus_mode}}"></td>
+                    </tr>
+                    <tr align="center">
+                        <td>PAN {{camera_status.pan}}</td>
+                        <td>TILT {{camera_status.tilt}}</td>
+                        <td>ZOOM {{camera_status.zoom}}</td>
+                        <td>Focus:
+                {{camera_status.focus}}</td>
+                    </tr>
+                </table>
+
                 Adresse IP pour tablette ou téléphone : {{ip_address}}
             </td>
         </tr>
