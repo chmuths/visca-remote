@@ -38,6 +38,7 @@ class Visca():
         self.buttons = buttons
         self.focus_mode = None
         self.ceiling_mount = ceiling_mount
+        self.last_sent_values = {"pan": 408, "tilt": 126, "zoom": 0, "focus": 0}
 
     @staticmethod
     def set_address_with_ack(address):
@@ -107,8 +108,11 @@ class Visca():
         :param tilt_pos: down=0, middle=126, up=212
         :return:
         """
-        pan_string = int_to_nibble(pan_pos if not self.ceiling_mount else 816 - pan_pos)
-        tilt_string = int_to_nibble(tilt_pos if not self.ceiling_mount else 212 - tilt_pos)
+        pan_value = pan_pos if not self.ceiling_mount else 816 - pan_pos
+        pan_string = int_to_nibble(pan_value)
+        tilt_value = tilt_pos if not self.ceiling_mount else 212 - tilt_pos
+        tilt_string = int_to_nibble(tilt_value)
+        self.last_sent_values.update({"pan": pan_value, "tilt": tilt_value})
         pt_direct_bytes = b'\x01\x06\x02' + pan_speed.to_bytes(1, byteorder='big') + \
                           tilt_speed.to_bytes(1, byteorder='big') + pan_string + tilt_string
         return self.send_command_with_ack(pt_direct_bytes)
@@ -160,6 +164,7 @@ class Visca():
         :param position: Min value = 0, max value = 2880
         :return:
         """
+        self.last_sent_values.update({"zoom": position})
         position_bytes = int_to_nibble(position)
         zoom_bytes = b'\x01\x04\x47' + position_bytes
         return self.send_command_with_ack(zoom_bytes)
@@ -208,6 +213,7 @@ class Visca():
         :param position: Min value = 0, max value = 2880
         :return:
         """
+        self.last_sent_values.update({"focus": position})
         position_bytes = int_to_nibble(position + 4096)
         focus_bytes = b'\x01\x04\x48' + position_bytes
         return self.send_command_with_ack(focus_bytes)

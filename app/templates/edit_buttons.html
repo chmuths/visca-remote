@@ -119,17 +119,17 @@ function selectChange() {
             <td>
                 <table>
                     <tr>
-                        <td height="150"><input type="range" min="0" max="816" value="{{camera_status.pan}}" name="pan_slider" onchange="selectChange()"></td>
-                        <td><input type="range" class="vranger" min="0" max="212" value="{{camera_status.tilt}}" name="tilt_slider"
+                        <td height="150"><input type="range" min="0" max="816" value="{{camera.last_sent_values.pan}}" name="pan_slider" onchange="selectChange()"></td>
+                        <td><input type="range" class="vranger" min="0" max="212" value="{{camera.last_sent_values.tilt}}" name="tilt_slider"
                                    onchange="selectChange()"></td>
-                        <td><input type="range" class="vranger" min="0" max="2880" value="{{camera_status.zoom}}" name="zoom_slider"
+                        <td><input type="range" class="vranger" min="0" max="2880" value="{{camera.last_sent_values.zoom}}" name="zoom_slider"
                                    onchange="selectChange()"></td>
                         <td><input type="submit" name="autofocus" value="{{camera_status.focus_mode}}"></td>
                     </tr>
                     <tr align="center">
-                        <td>PAN {{camera_status.pan}}</td>
-                        <td>TILT {{camera_status.tilt}}</td>
-                        <td>ZOOM {{camera_status.zoom}}</td>
+                        <td>PAN {{camera.last_sent_values.pan}}</td>
+                        <td>TILT {{camera.last_sent_values.tilt}}</td>
+                        <td>ZOOM {{camera.last_sent_values.zoom}}</td>
                         <td>Focus:
                 {{camera_status.focus}}</td>
                     </tr>
