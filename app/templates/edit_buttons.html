@@ -119,16 +119,16 @@ function selectChange() {
             <td>
                 <table>
                     <tr>
-                        <td height="150"><input type="range" min="0" max="816" value="{{camera.last_sent_values.pan}}" name="pan_slider" onchange="selectChange()"></td>
-                        <td><input type="range" class="vranger" min="0" max="212" value="{{camera.last_sent_values.tilt}}" name="tilt_slider"
+                        <td height="150"><input type="range" min="0" max="816" value="{% if camera.ceiling_mount %}{{ 816 - camera.last_sent_values.pan}}{% else %}{{camera.last_sent_values.pan}}{% endif %}" name="pan_slider" onchange="selectChange()"></td>
+                        <td><input type="range" class="vranger" min="0" max="212" value="{% if camera.ceiling_mount %}{{ 212 - camera.last_sent_values.tilt}}{% else %}{{camera.last_sent_values.tilt}}{% endif %}" name="tilt_slider"
                                    onchange="selectChange()"></td>
                         <td><input type="range" class="vranger" min="0" max="2880" value="{{camera.last_sent_values.zoom}}" name="zoom_slider"
                                    onchange="selectChange()"></td>
                         <td><input type="submit" name="autofocus" value="{{camera_status.focus_mode}}"></td>
                     </tr>
                     <tr align="center">
-                        <td>PAN {{camera.last_sent_values.pan}}</td>
-                        <td>TILT {{camera.last_sent_values.tilt}}</td>
+                        <td>PAN {% if camera.ceiling_mount %}{{ 816 - camera.last_sent_values.pan}}{% else %}{{camera.last_sent_values.pan}}{% endif %}</td>
+                        <td>TILT {% if camera.ceiling_mount %}{{ 212 - camera.last_sent_values.tilt}}{% else %}{{camera.last_sent_values.tilt}}{% endif %}</td>
                         <td>ZOOM {{camera.last_sent_values.zoom}}</td>
                         <td>Focus:
                 {{camera_status.focus}}</td>
