@@ -180,6 +180,8 @@ def edit_buttons():
                                 cam.buttons[button_row][button_col].pop('focus_value')
 
             special_button = False
+            pan_inc = 0
+            tilt_inc = 0
             for key, value in request.form.items():
                 if value == 'Test':
                     special_button = True
@@ -208,6 +210,15 @@ def edit_buttons():
                             "zoom_value": 0,
                             "focus_value": 288
                         }]
+                elif key == "pan+1":
+                    pan_inc = 1
+                elif key == "pan-1":
+                    pan_inc = -1
+                elif key == "tilt+1":
+                    tilt_inc = 1
+                elif key == "tilt-1":
+                    tilt_inc = -1
+
                 elif key == 'copy_to_button':
                     for button_row in cam.buttons:
                         for button in button_row:
@@ -217,8 +228,8 @@ def edit_buttons():
                                 button['zoom_value'] = int(request.form.get('zoom_slider'))
 
             if not special_button:
-                pan_value = int(request.form.get('pan_slider'))
-                tilt_value = int(request.form.get('tilt_slider'))
+                pan_value = int(request.form.get('pan_slider')) + pan_inc
+                tilt_value = int(request.form.get('tilt_slider')) + tilt_inc
                 zoom_value = int(request.form.get('zoom_slider'))
                 cam.pt_direct(pan_value, tilt_value, pan_speed=15, tilt_speed=15)
                 cam.zoom_direct(zoom_value)

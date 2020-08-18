@@ -62,7 +62,11 @@ class Visca:
         command_string = (self.address + 0x80).to_bytes(1, byteorder='big') + hex_bytes + b'\xff'
         if debug_mode:
             hex_print(command_string)
-        ser.write(command_string)
+        try:
+            ser.write(command_string)
+        except serial.serialutil.SerialTimeoutException:
+            print("Serial Write Exception")
+
         response = ser.read(50)
         if debug_mode:
             hex_print(response)

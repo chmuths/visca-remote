@@ -127,8 +127,8 @@ function selectChange() {
                         <td><input type="submit" name="autofocus" value="{{camera_status.focus_mode}}"></td>
                     </tr>
                     <tr align="center">
-                        <td>PAN {% if camera.ceiling_mount %}{{ 816 - camera.last_sent_values.pan}}{% else %}{{camera.last_sent_values.pan}}{% endif %}</td>
-                        <td>TILT {% if camera.ceiling_mount %}{{ 212 - camera.last_sent_values.tilt}}{% else %}{{camera.last_sent_values.tilt}}{% endif %}</td>
+                        <td><input type="submit" name="pan-1" value="<-">  PAN {% if camera.ceiling_mount %}{{ 816 - camera.last_sent_values.pan}}{% else %}{{camera.last_sent_values.pan}}{% endif %}  <input type="submit" name="pan+1" value="->"></td>
+                        <td><input type="submit" name="tilt+1" value="^"><br/><input type="submit" name="tilt-1" value="v"><br/>TILT {% if camera.ceiling_mount %}{{ 212 - camera.last_sent_values.tilt}}{% else %}{{camera.last_sent_values.tilt}}{% endif %}</td>
                         <td>ZOOM {{camera.last_sent_values.zoom}}</td>
                         <td>Focus:
                 {{camera_status.focus}}</td>
