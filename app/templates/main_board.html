@@ -23,7 +23,7 @@
                         {% for button_def in buttons_row %}
                         <td>
                             <input type="submit" name="{{camera.address}}-{{button_def.name}}"
-                                   value="{{button_def.name}}">
+                                   value="{{button_def.name}}" {% if button_def.name == camera.last_button_name %}class="activebutton"{% endif %}>
                         </td>
                         {% endfor %}
                     </tr>

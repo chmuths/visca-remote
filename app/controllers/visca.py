@@ -3,6 +3,7 @@ import serial
 
 from config import hw_conf
 
+
 def int_to_nibble(value):
     value1 = value % 16
     value = int(value / 16)
@@ -15,11 +16,13 @@ def int_to_nibble(value):
     hex_value = full_value.to_bytes(4, byteorder='big')
     return hex_value
 
+
 def nibble_to_int(hex_string):
     value = 0
     for index in range(len(hex_string)):
-        value = value * 16 +hex_string[index]
+        value = value * 16 + hex_string[index]
     return value
+
 
 def hex_print(bytes_array):
     print('|'.join(hex(x) for x in bytes_array))
@@ -30,12 +33,13 @@ serial_port = hw_conf.get('global', {}).get("serial", "COM4")
 ser = serial.Serial(serial_port, 9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=1, timeout=0.1)
 
 
-class Visca():
+class Visca:
 
     def __init__(self, address, name, buttons=None, ceiling_mount=False):
         self.address = address
         self.name = name
         self.buttons = buttons
+        self.last_button_name = None
         self.focus_mode = None
         self.ceiling_mount = ceiling_mount
         self.last_sent_values = {"pan": 408, "tilt": 126, "zoom": 0, "focus": 0}
@@ -106,6 +110,8 @@ class Visca():
 
         :param pan_pos: left=0, middle=408, right=816
         :param tilt_pos: down=0, middle=126, up=212
+        :param pan_speed: 0 (slow) to 15 (fast)
+        :param tilt_speed: 0 (slow) to 15 (fast)
         :return:
         """
         pan_value = pan_pos if not self.ceiling_mount else 816 - pan_pos
@@ -123,9 +129,9 @@ class Visca():
         if pt_status and pt_status[1] == 0x50:
             pan_pos = nibble_to_int(pt_status[2:6])
             tilt_pos = nibble_to_int(pt_status[6:10])
-            return (pan_pos, tilt_pos)
+            return pan_pos, tilt_pos
         else:
-            return (None, None)
+            return None, None
 
     # Zoom group of methods
     def zoom_stop(self):
@@ -174,7 +180,7 @@ class Visca():
         zoom_status = self.send_command_with_ack(zoom_query_bytes)
         if zoom_status and zoom_status[1] == 0x50:
             zoom_pos = nibble_to_int(zoom_status[2:6])
-            return (zoom_pos)
+            return zoom_pos
 
     # Focus group of methods
     def focus_stop(self):
@@ -231,20 +237,20 @@ class Visca():
         focus_status = self.send_command_with_ack(focus_bytes)
         if focus_status and focus_status[1] == 0x50:
             zoom_pos = nibble_to_int(focus_status[2:6])
-            return (zoom_pos - 4096)
+            return zoom_pos - 4096
 
     def focus_mode_query(self):
         focus_bytes = b'\x09\x04\x38'
         focus_status = self.send_command_with_ack(focus_bytes)
         if focus_status and focus_status[1] == 0x50:
             if focus_status[2] == 0x02:
-                return ("Auto")
+                return "Auto"
             elif focus_status[2] == 0x03:
-                return ("Manual")
+                return "Manual"
+
 
 # TEST code
 if __name__ == '__main__':
-
     Visca.set_address_with_ack(1)
     Visca.set_address_with_ack(1)
     Visca.set_address_with_ack(1)

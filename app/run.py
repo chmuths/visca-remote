@@ -55,6 +55,8 @@ def execute_action(camera, button):
         camera.focus_manual()
         camera.focus_direct(focus_value)
 
+    camera.last_button_name = button['name']
+
 
 def get_camera_status(camera_to_query):
     pan, tilt = camera_to_query.pt_query()
@@ -241,6 +243,7 @@ def delete_button(row, column):
         return render_template('edit_buttons.html', camera=cam, camera_status=camera_status, ip_address=host_ip)
     else:
         return render_template('main_board.html', cameras=cameras)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int("80"))

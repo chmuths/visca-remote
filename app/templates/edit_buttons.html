@@ -92,7 +92,7 @@ function selectChange() {
                                     </td>
                                     <td>
                                         <input type="submit" name="test-{{row_loop.index0}}-{{loop.index0}}"
-                                               value="Test">
+                                               value="Test" {% if button_def.name == camera.last_button_name %}class="activebutton"{% endif %}>
                                     </td>
                                 </tr>
                                 <tr>
