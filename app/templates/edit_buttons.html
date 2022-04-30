@@ -11,6 +11,13 @@
 function selectChange() {
     document.getElementById("cam_buttons_form").submit();
 }
+function changePanFin() {
+    let curseurFin = document.getElementById("pan_fin");
+    let curseurGros = document.getElementById("pan_gros");
+    console.log(curseurFin)
+        console.log(curseurGros)
+    document.getElementById("cam_buttons_form").submit();
+}
 
 
 </script>
@@ -92,7 +99,8 @@ function selectChange() {
                                     </td>
                                     <td>
                                         <input type="submit" name="test-{{row_loop.index0}}-{{loop.index0}}"
-                                               value="Test" {% if button_def.name == camera.last_button_name %}class="activebutton"{% endif %}>
+                                               value="Test" {% if button_def.name== camera.last_button_name
+                                               %}class="activebutton" {% endif %}>
                                     </td>
                                 </tr>
                                 <tr>
@@ -119,20 +127,47 @@ function selectChange() {
             <td>
                 <table>
                     <tr>
-                        <td height="150"><input type="range" min="0" max="816" value="{% if camera.ceiling_mount %}{{ 816 - camera.last_sent_values.pan}}{% else %}{{camera.last_sent_values.pan}}{% endif %}" name="pan_slider" onchange="selectChange()"></td>
-                        <td><input type="range" class="vranger" min="0" max="212" value="{% if camera.ceiling_mount %}{{ 212 - camera.last_sent_values.tilt}}{% else %}{{camera.last_sent_values.tilt}}{% endif %}" name="tilt_slider"
-                                   onchange="selectChange()"></td>
-                        <td><input type="range" class="vranger" min="0" max="2880" value="{{camera.last_sent_values.zoom}}" name="zoom_slider"
-                                   onchange="selectChange()"></td>
+                        <td height="150">
+                            Gros<br/>
+                            <input type="range" min="0" max="816" id="pan_gros"
+                                   value="{% if camera.ceiling_mount %}{{ 816 - camera.last_sent_values.pan}}{% else %}{{camera.last_sent_values.pan}}{% endif %}"
+                                   name="pan_slider" onchange="selectChange()"><br/>
+                            Fin<br/>
+                            <input type="range" min="-20" max="20" id="pan_fin"
+                                   name="pan_slider_fine" onchange="selectChange()">
+                        </td>
+                        <td>
+                            <input type="range" class="vranger" min="0" max="212"
+                                   value="{% if camera.ceiling_mount %}{{ 212 - camera.last_sent_values.tilt}}{% else %}{{camera.last_sent_values.tilt}}{% endif %}"
+                                   name="tilt_slider"
+                                   onchange="selectChange()">
+                            <input type="range" class="vranger" min="-10" max="10" value="0"
+                                   name="tilt_slider_fine" onchange="selectChange()">
+                        </td>
+                        <td>
+                            <input type="range" class="vranger" min="0" max="2880"
+                                   value="{{camera.last_sent_values.zoom}}" name="zoom_slider"
+                                   onchange="selectChange()">
+                        </td>
                         <td><input type="submit" name="autofocus" value="{{camera_status.focus_mode}}"></td>
                     </tr>
                     <tr align="center">
-                        <td><input type="submit" name="pan-1" value="<-">  PAN {% if camera.ceiling_mount %}{{ 816 - camera.last_sent_values.pan}}{% else %}{{camera.last_sent_values.pan}}{% endif %}  <input type="submit" name="pan+1" value="->"></td>
-                        <td><input type="submit" name="tilt+1" value="^"><br/><input type="submit" name="tilt-1" value="v"><br/>TILT {% if camera.ceiling_mount %}{{ 212 - camera.last_sent_values.tilt}}{% else %}{{camera.last_sent_values.tilt}}{% endif %}</td>
+                        <td><input type="submit" name="pan-1" value="<-"> PAN {% if camera.ceiling_mount %}{{ 816 -
+                            camera.last_sent_values.pan}}{% else %}{{camera.last_sent_values.pan}}{% endif %} <input
+                                    type="submit" name="pan+1" value="->"></td>
+                        <td><input type="submit" name="tilt+1" value="^"><br/><input type="submit" name="tilt-1"
+                                                                                     value="v"><br/>TILT {% if
+                            camera.ceiling_mount %}{{ 212 - camera.last_sent_values.tilt}}{% else
+                            %}{{camera.last_sent_values.tilt}}{% endif %}
+                        </td>
                         <td>ZOOM {{camera.last_sent_values.zoom}}</td>
                         <td>Focus:
-                {{camera_status.focus}}</td>
-                        <td>{% if camera.last_button_name %}<input type="submit" name="copy_to_button" value="Copier vers bouton '{{camera.last_button_name}}'">{% endif %}</td>
+                            {{camera_status.focus}}
+                        </td>
+                        <td>{% if camera.last_button_name %}<input type="submit" name="copy_to_button"
+                                                                   value="Copier vers bouton '{{camera.last_button_name}}'">{%
+                            endif %}
+                        </td>
                     </tr>
                 </table>
 

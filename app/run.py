@@ -1,46 +1,26 @@
 # coding: utf-8
 
-import json
-import os.path
 import socket
-from flask import Flask, render_template, send_file, request
+import json
+from flask import Flask, render_template, send_file, request, Response
+import config
 from controllers import visca
-from config import hw_conf
 
 host_name = socket.gethostname()
 host_ip = str(socket.gethostbyname(host_name))
 
-debug_mode = hw_conf.get('global', {}).get("debug", False)
+debug_mode = config.hw_conf.get('global', {}).get("debug", False)
 
 visca.Visca.set_address_with_ack(1)
 
 cameras = []
-for camera in hw_conf.get('cameras'):
+for camera in config.hw_conf.get('cameras', []):
     address = camera.get("address", 0x81)
     name = camera.get("name", "No Name")
-    ceiling = camera.get("ceiling_mount", False)
+    ceiling = camera.get("ceiling_mount", True)
     buttons_list = camera.get("buttons")
     this_camera = visca.Visca(address, name, buttons=buttons_list, ceiling_mount=ceiling)
     cameras.append(this_camera)
-
-
-def save_config(cameras_list):
-    """
-    Save full configuration
-    :param cameras_list: cluster of camera objects
-    :return: Saved JSON file
-    """
-    camera_dict_list = []
-    for camera in cameras_list:
-        camera_dict = camera.__dict__
-        camera_dict_list.append(camera_dict)
-
-    final_dict = {"cameras": camera_dict_list, "global": hw_conf.get("global", {})}
-
-    folder_name = os.path.dirname(__file__)
-    path = os.path.join(folder_name, "..", 'config.json')
-    with open(path, 'w') as config_file:
-        json.dump(final_dict, config_file)
 
 
 def execute_action(camera, button):
@@ -89,7 +69,7 @@ def get_image(img_filename):
     return send_file('static/images/' + img_filename, mimetype='image/png')
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST', 'PUT'])
 def main_board():
     """
     Display the main buttons page
@@ -121,6 +101,42 @@ def main_board():
                 filtered_cameras[0].focus_mode = filtered_cameras[0].focus_mode_query()
         return render_template('main_board.html', cameras=cameras)
 
+    elif request.method == 'PUT':
+        # Requires JSON load like {"camera": 0, "button": "chorale"}
+        print("Camera PUT request")
+        try:
+            camera_address = request.json.get("camera")
+            button_name = request.json.get("button")
+        except AttributeError:
+            print("Mauvais JSON")
+            response = Response(json.dumps({'success': False}), status=400, mimetype='application/json')
+            return response
+
+        filtered_cameras = [cam for cam in cameras if cam.address == camera_address]
+        if not filtered_cameras:
+            print(f"Camera {camera_address} introuvable")
+            response = Response(json.dumps({'success': False, 'message': f'camera {camera_address} not found'}),
+                                status=400, mimetype='application/json')
+            return response
+
+        found_button = None
+        for button_row in filtered_cameras[0].buttons:
+            for button_item in button_row:
+                if button_item['name'].lower() == button_name.lower():
+                    found_button = button_item
+        if found_button:
+            print(f"Camera: {camera_address} bouton {button_name}")
+            execute_action(filtered_cameras[0], found_button)
+        elif debug_mode:
+            print(f"Bouton {button_name} pas trouvé")
+            response = Response(json.dumps({'success': False,
+                                            'message': f'button {button_name} not found for camera {camera_address}'}),
+                                status=400, mimetype='application/json')
+            return response
+
+        filtered_cameras[0].focus_mode = filtered_cameras[0].focus_mode_query()
+        response = Response(json.dumps({'success': True}), status=200, mimetype='application/json')
+        return response
 
 @app.route('/config', methods=['GET', 'POST'])
 def edit_buttons():
@@ -145,6 +161,7 @@ def edit_buttons():
         if len(filtered_cameras) == 1:
             cam = filtered_cameras[0]
             for key, value in request.form.items():
+                print(key, value)
                 split_key = key.split("-")
                 input_name = split_key[0]
                 if len(split_key) > 2:
@@ -228,13 +245,13 @@ def edit_buttons():
                                 button['zoom_value'] = int(request.form.get('zoom_slider'))
 
             if not special_button:
-                pan_value = int(request.form.get('pan_slider')) + pan_inc
-                tilt_value = int(request.form.get('tilt_slider')) + tilt_inc
+                pan_value = int(request.form.get('pan_slider')) + pan_inc + int(request.form.get('pan_slider_fine'))
+                tilt_value = int(request.form.get('tilt_slider')) + tilt_inc + int(request.form.get('tilt_slider_fine'))
                 zoom_value = int(request.form.get('zoom_slider'))
                 cam.pt_direct(pan_value, tilt_value, pan_speed=15, tilt_speed=15)
                 cam.zoom_direct(zoom_value)
 
-            save_config(cameras)
+            config.save_config(cameras)
             camera_status = get_camera_status(cam)
 
             return render_template('edit_buttons.html', camera=cam, camera_status=camera_status, ip_address=host_ip)
@@ -256,7 +273,7 @@ def delete_button(row, column):
 
         del cam.buttons[int(row)][int(column)]
 
-        save_config(cameras)
+        config.save_config(cameras)
         camera_status = get_camera_status(cam)
 
         return render_template('edit_buttons.html', camera=cam, camera_status=camera_status, ip_address=host_ip)
